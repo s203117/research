@@ -12,9 +12,12 @@ G = nx.erdos_renyi_graph(reservoir_node, p, directed = 1)
 
 ary = nx.to_numpy_array(G)
 normal_distribution = np.random.normal(0.0, 1.0, (reservoir_node, reservoir_node))
-with open('W_network.csv','w', newline='') as f:
+W = normal_distribution*ary
+spectral_radius = max(abs(np.linalg.eigvals(W)))
+W = W / spectral_radius * 0.9999
+with open('W.csv','w', newline='') as f:
     writer = csv.writer(f)
-    writer.writerows(normal_distribution*ary)
+    writer.writerows(W)
 
 fig = plt.figure(figsize = (8, 8), dpi = 100)
 
@@ -23,7 +26,7 @@ pos = nx.random_layout(G)
 
 nx.draw_networkx(G, pos)
 plt.axis("off")
-plt.show()
+#plt.show()
 fig.savefig('W_network.pdf', bbox_inches='tight', pad_inches=0.05)
 fig.savefig('W_network.png', bbox_inches='tight', pad_inches=0.05)
 
