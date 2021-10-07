@@ -322,6 +322,7 @@ def control():
         # x1の予測
         u = o
         reservoir = (I-K)@((1-alpha)*old_reservoir + alpha*(np.tanh(Win*u + W@old_reservoir))) + K@old_reservoir
+        #reservoir = old_reservoir + K @ (((1-alpha)*old_reservoir + alpha*(np.tanh(Win*u + W@old_reservoir))) - old_reservoir)
         o = Wout @ reservoir
 
         old_reservoir = reservoir
@@ -374,12 +375,12 @@ spectral_radius = max(abs(np.linalg.eigvals(W)))
 print('スペクトル半径', spectral_radius)
 
 # Win 読み込み
-#make_Win()
+make_Win()
 Win = np.loadtxt('W_in.csv', dtype='float')
 Win = np.reshape(Win, (reservoir_node, 1))
 
 # Wout 学習
-#make_Wout()
+make_Wout()
 reservoir = np.loadtxt('reservoir.csv', delimiter=',', dtype='float')
 reservoir = np.reshape(reservoir, (reservoir_node, 1))
 old_reservoir = reservoir
