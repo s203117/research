@@ -21,7 +21,7 @@ alpha = 0.8
 reservoir_node = 200
 input_node = 100
 T = 100000                   # 学習ステップ数
-predict_T = 100              # 再帰予測のステップ数
+predict_T = 10000              # 再帰予測のステップ数
 ctrl_T = 100                  # 固定点の制御ステップ数
 
 reservoir = np.zeros((reservoir_node,1))
@@ -222,16 +222,32 @@ def make_reprediction():
     fig = plt.figure(figsize = (12, 5), dpi = 100)
     ax1 = fig.add_subplot(1,1,1)
     ax1.plot(t, Hx_plot, lw = 2, zorder=1, c = 'orange', label="")
-    ax1.plot(t, RC_plot, lw = 2, zorder=2, c = 'blue', label="")
+    ax1.plot(t, RC_plot, lw = 2, zorder=2, c = 'red', label="")
 
     ax1.set_xlabel('t', fontsize=20)
     ax1.set_ylabel('x', fontsize=20, labelpad=-2)
-    ax1.set_xlim(0, predict_T)
+    ax1.set_xlim(predict_T-100, predict_T)
 
     ax1.tick_params(direction = "in", labelsize=17, pad = 4, length = 6)
 
     fig.savefig('recursive_pre.pdf', bbox_inches='tight', pad_inches=0.05)
     fig.savefig('recursive_pre.png', bbox_inches='tight', pad_inches=0.05)
+
+    fig = plt.figure(figsize = (5, 5), dpi = 100)
+    ax2 = fig.add_subplot(1,1,1)
+    ax2.scatter(Hx_plot[:-1], Hx_plot[1:], s=10, zorder=1, c = 'green', label="")
+    ax2.scatter(RC_plot[:-1], RC_plot[1:], s=3, zorder=3, c = 'red', label="")
+    ax2.scatter(fix_Hx, fix_Hx, s=20, zorder=2, c='yellow', label="")
+
+    ax2.set_xlabel('x(t)', fontsize=20)
+    ax2.set_ylabel('x(t+1)', fontsize=20, labelpad=-2)
+    ax2.set_xlim(-1.5,1.5)
+    ax2.set_ylim(-1.5,1.5)
+
+    ax1.tick_params(direction = "in", labelsize=17, pad = 4, length = 6)
+
+    fig.savefig('delay_coordinate.pdf', bbox_inches='tight', pad_inches=0.05)
+    fig.savefig('delay_coordinate.png', bbox_inches='tight', pad_inches=0.05)
 
 # 固定点探索 ------------------------------------------------------------------------------
 def fixpoint_search():
@@ -337,7 +353,8 @@ def control():
     fig = plt.figure(figsize = (5, 5), dpi = 100)
     ax2 = fig.add_subplot(1,1,1)
     ax2.scatter(original_Hx[:-1], original_Hx[1:], s=10, zorder=1, c = 'green', label="")
-    ax2.scatter(RC_plot[:-1], RC_plot[1:], s=5, zorder=2, c = 'red', label="")
+    ax2.scatter(RC_plot[:-1], RC_plot[1:], s=3, zorder=3, c = 'red', label="")
+    ax2.scatter(fix_Hx, fix_Hx, s=20, zorder=2, c='yellow', label="")
 
     ax2.set_xlabel('x(t)', fontsize=20)
     ax2.set_ylabel('x(t+1)', fontsize=20, labelpad=-2)
@@ -441,10 +458,10 @@ old_logix = np.loadtxt('learn_result.csv', delimiter=',', dtype='float', skiprow
 o = Wout @ reservoir
 
 # 再帰予測 (RCの出力を次の入力に)
-#make_reprediction()
+make_reprediction()
 
 # 固定点探索
 #fixpoint_search()
 
 # stability tranceformation
-control()
+#control()
